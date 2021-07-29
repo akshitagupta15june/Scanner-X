@@ -20,3 +20,26 @@ edged_image = cv2.Canny(blurred_image, 0, 50)
 original_edged = edged_image.copy()
 file_name_path = ‘file path to save image’ + str(count) + ‘.png’
 cv2.imwrite(file_name_path, original_edged)
+
+
+(contours, _) = cv2.findContours(edged_image, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+contours = sorted(contours, key=cv2.contourArea, reverse=True)
+
+def rectify(h):
+h = h.reshape((4,2))
+hnew = np.zeros((4,2),dtype = np.float32)
+add = h.sum(1)
+hnew[0] = h[np.argmin(add)]
+hnew[2] = h[np.argmax(add)]
+diff = np.diff(h,axis = 1)
+hnew[1] = h[np.argmin(diff)]
+hnew[3] = h[np.argmax(diff)]
+return hnew
+
+for c in contours:
+p = cv2.arcLength(c, True)
+approx = cv2.approxPolyDP(c, 0.02 * p, True)
+
+if len(approx) == 4:
+target = approx
+break
