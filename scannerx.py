@@ -43,3 +43,17 @@ approx = cv2.approxPolyDP(c, 0.02 * p, True)
 if len(approx) == 4:
 target = approx
 break
+
+
+approx = rectify(target)
+pts2 = np.float32([[0,0],[800,0],[800,800],[0,800]])
+M = cv2.getPerspectiveTransform(approx,pts2)
+final_image = cv2.warpPerspective(original,M,(800,800))
+cv2.drawContours(image, [target], -1, (0, 255, 0), 2)
+final_image = cv2.cvtColor(final_image, cv2.COLOR_BGR2GRAY)
+
+file_name_path = ‘file path to save image’ + str(count) + ‘.png’
+cv2.imwrite(file_name_path, final_image)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
